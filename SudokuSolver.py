@@ -55,8 +55,6 @@ def search_bst(root, val): # Define a function to search for a value in the bina
 
 def solve(sudoku):
     
-    #SectionListLink = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8]
-
     #Each possible value index is indexed as a section in each list
     SectionList = [[0,1,2,9,10,11,18,19,20],
                   [3,4,5,12,13,14,21,22,23],
@@ -84,7 +82,6 @@ def solve(sudoku):
     for x in PossibleIndexes:
         print(x)
 
-
     for numberx in range(9): #for each digit in the sudoku
         print()
         for x in sudoku[numberx]:
@@ -92,14 +89,6 @@ def solve(sudoku):
     
     for number in range(9): #for each digit in the sudoku
         for NC in sudoku[number]:
-
-            """ 
-            for numberx in range(9): #for each digit in the sudoku
-                print()
-                for x in sudoku[numberx]:
-                    print([x[1]+x[0]+x[0]*8],end =" ")
-            """
-            
 
             # Build the binary search tree using the second list
             bst = build_bst(PossibleIndexes[number])
@@ -112,43 +101,34 @@ def solve(sudoku):
             
             for val in SectionList[Section]:
                 if search_bst(bst, val):
-        
-                    if  number == 0:
-                        print(val)
-                        #print(PossibleIndexes[number])
                     PossibleIndexes[number].remove(val) 
-            
-        print()
-        for number in range(9): #for each digit in the sudoku
-            for NC in sudoku[number]:
+        
+    for number in range(9): #for each digit in the sudoku
+        for NC in sudoku[number]:
+            bst = build_bst(PossibleIndexes[number])
+            for value in range(9):
+                if search_bst(bst, NC[1]+value+value*8):
+                    PossibleIndexes[number].remove(NC[1]+value+value*8) 
 
-                bst = build_bst(PossibleIndexes[number])
-       
-                for value in range(9):
-                    if search_bst(bst, NC[1]+value+value*8):
-                        if  number == 0:
-                            print( NC[1]+value+value*8)
-                            #print(PossibleIndexes[number])
-                        PossibleIndexes[number].remove(NC[1]+value+value*8) 
-
-        print()              
-        for number in range(9): #for each digit in the sudoku
-            for NC in sudoku[number]:
-
-                bst = build_bst(PossibleIndexes[number])
-                
-
-                for value in range(9):
-                    if search_bst(bst, value+NC[0]+NC[0]*8):
-                        if number ==0:
-                            print( NC[1]+value+value*8)
-                           # print(PossibleIndexes[number])
-                        PossibleIndexes[number].remove(value+NC[0]+NC[0]*8) 
-            
-
-
+    for number in range(9): #for each digit in the sudoku
+        for NC in sudoku[number]:
+            bst = build_bst(PossibleIndexes[number])
+            for value in range(9):
+                if search_bst(bst, value+NC[0]+NC[0]*8):
+                    PossibleIndexes[number].remove(value+NC[0]+NC[0]*8) 
+    
     for x in PossibleIndexes:
         print(x)
+    print()
+    for number in range(9): #for each digit in the sudoku
+            bst = build_bst(PossibleIndexes[number])
+            for numberx in range(9): #for each digit in the sudoku
+                for NC in sudoku[numberx]:
+                    if search_bst(bst, NC[1]+NC[0]+NC[0]*8):
+                        PossibleIndexes[number].remove(NC[1]+NC[0]+NC[0]*8)
+
+    for x in PossibleIndexes:
+            print(x)
 
 
 #(x,y)!=sudoku
@@ -158,9 +138,6 @@ def solve(sudoku):
 #y!=y of possible values=place
 #(x,y)!=corresponding3*3square(number)
 #
-#
-#
-
 
 
 """
@@ -178,7 +155,7 @@ sudoku = [[],[],[],[],[],[],[],[],[]]
 sudoku = [
         [(0,4),(2,0),(4,3)],
         [(5,0),(4,5),(8,1)],
-        [(1,3),(2,8),(2,8),(8,2)],
+        [(1,3),(2,8),(8,2)],
         [(0,7),(4,4),(3,8),(7,5)],
         [(3,1),(5,5),(8,4),(6,8)],
         [(1,1),(0,6),(6,0),(7,7)],
