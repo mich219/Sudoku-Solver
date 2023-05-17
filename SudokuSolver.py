@@ -55,7 +55,7 @@ def search_bst(root, val): # Define a function to search for a value in the bina
 
 def solve(sudoku):
     
-    SectionListLink = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8]
+    #SectionListLink = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8]
 
     #Each possible value index is indexed as a section in each list
     SectionList = [[0,1,2,9,10,11,18,19,20],
@@ -68,6 +68,12 @@ def solve(sudoku):
                   [57,58,59,66,67,68,75,76,77],
                   [60,61,62,69,70,71,78,79,80]]
 
+
+
+
+    SectionListLink = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8]
+
+
     #list of possible indexes for all the posible coordinates for each number
     PossibleIndexes = [[x for x in range(81)] for y in range(9)]
 
@@ -79,8 +85,21 @@ def solve(sudoku):
         print(x)
 
 
+    for numberx in range(9): #for each digit in the sudoku
+        print()
+        for x in sudoku[numberx]:
+            print([x[1]+x[0]+x[0]*8],end =" ")
+    
     for number in range(9): #for each digit in the sudoku
         for NC in sudoku[number]:
+
+            """ 
+            for numberx in range(9): #for each digit in the sudoku
+                print()
+                for x in sudoku[numberx]:
+                    print([x[1]+x[0]+x[0]*8],end =" ")
+            """
+            
 
             # Build the binary search tree using the second list
             bst = build_bst(PossibleIndexes[number])
@@ -93,8 +112,41 @@ def solve(sudoku):
             
             for val in SectionList[Section]:
                 if search_bst(bst, val):
+        
+                    if  number == 0:
+                        print(val)
+                        #print(PossibleIndexes[number])
                     PossibleIndexes[number].remove(val) 
-    print()
+            
+        print()
+        for number in range(9): #for each digit in the sudoku
+            for NC in sudoku[number]:
+
+                bst = build_bst(PossibleIndexes[number])
+       
+                for value in range(9):
+                    if search_bst(bst, NC[1]+value+value*8):
+                        if  number == 0:
+                            print( NC[1]+value+value*8)
+                            #print(PossibleIndexes[number])
+                        PossibleIndexes[number].remove(NC[1]+value+value*8) 
+
+        print()              
+        for number in range(9): #for each digit in the sudoku
+            for NC in sudoku[number]:
+
+                bst = build_bst(PossibleIndexes[number])
+                
+
+                for value in range(9):
+                    if search_bst(bst, value+NC[0]+NC[0]*8):
+                        if number ==0:
+                            print( NC[1]+value+value*8)
+                           # print(PossibleIndexes[number])
+                        PossibleIndexes[number].remove(value+NC[0]+NC[0]*8) 
+            
+
+
     for x in PossibleIndexes:
         print(x)
 
