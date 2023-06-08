@@ -61,7 +61,7 @@ def search_bst(root, val): # Define a function to search for a value in the bina
 
 def solve(sudoku):
 	
-	AllPossibleValuesCoordinates = [[(x, y) for y in range(9)] for x in range(9)]	
+	AllPossibleValuesCoordinates = [(y, x) for y in range(9) for x in range(9)]	
 	SectionList = [
 	[0, 1, 2, 9, 10, 11, 18, 19, 20],
     [3, 4, 5, 12, 13, 14, 21, 22, 23],
@@ -78,37 +78,85 @@ def solve(sudoku):
 
 	LineList = [[i for i in range(j, j+9)] for j in range(0, 81, 9)]
 	LineListLink = [(i // 9) % 9 for i in range(81)]
+	PossibleLine = [[i for i in range(9)] for j in range(9)]
+	
 
-	ColumnList = [[i+j*9 for i in range(9)] for j in range(9)]
+	ColumnList = [[LineList[j][i] for j in range(9)] for i in range(9)]
 	ColumnListLink = [i % 9 for i in range(81)]
+	PossibleCol = [[i for i in range(9)] for j in range(9)]
 
 	PossibleIndexes = [[x for x in range(81)] for y in range(9)]
-
-	#possible coordinates 9*9
 	PossibleCoordinates = [(x, y) for x in range(9) for y in range(9)]
-
 	NumberIndexValues = [[]for x in range (9)]
-	AddValues = []	
-	RemoveValues = []
-	IndexValue = 0
 
 
 	for numberx in range(9): #for each digit in the sudoku
 		for NC in sudoku[numberx]:
 			NumberIndexValues[numberx].append(NC[1]+NC[0]+NC[0]*8)
 	
-	
-	
-	Print_Output(ConvertToOutput(sudoku))
 
-	for rand in range(1):
+	for number in range(9): #Remove placed numbers from Number Possible Values
+		bst = build_bst(PossibleIndexes[number])
+		for numberx in range(9):
+			for value in NumberIndexValues[numberx]:
+				if search_bst(bst, value):
+					PossibleIndexes[number].remove(value)	
+
+	for number in range(9): #Remove Corressponding section from Number Possible Values
+		bst = build_bst(PossibleIndexes[number])
+		for value in NumberIndexValues[number]:
+			for val in SectionList[SectionListLink[value]]:
+				if search_bst(bst, val):
+					PossibleIndexes[number].remove(val) 
+
+	for number in range(9): # Remove impossible values in each Column for each number
+		bst = build_bst(PossibleIndexes[number])
+		for value in NumberIndexValues[number]:
+			Col = ColumnListLink[value]
+			PossibleCol[number].remove(Col)
+			for val in ColumnList[Col]:
+				if search_bst(bst, val):
+					PossibleIndexes[number].remove(val) 
+
+	for number in range(9): # Remove impossible values in each Line for each number
+		bst = build_bst(PossibleIndexes[number])
+		for value in NumberIndexValues[number]:
+			Line = LineListLink[value]
+			PossibleLine[number].remove(Line)
+			for val in LineList[Line]:
+				if search_bst(bst, val):
+					PossibleIndexes[number].remove(val) 
+
 	
-		for number in range(9): #Remove placed numbers from Number Possible Values
+	for x in range(10):
+
+		for number in range(9): # clear value indexes already used
+			NumberIndexValues[number].clear()
+					
+		for number in range(9): # check for single possible value in each line
+			for line in PossibleLine[number]:
+				bst = build_bst(LineList[line])
+				found = 0
+				for value in PossibleIndexes[number]:
+					if search_bst(bst, value): 
+						found = found + 1
+						UniqueValue = value
+				if found == 1:
+					sudoku[number].append(AllPossibleValuesCoordinates[UniqueValue])
+					NumberIndexValues[number].append(UniqueValue)
+					PossibleLine[number].remove(line)
+
+
+		for number in range(9): # Remove impossible values in each Column for each number
 			bst = build_bst(PossibleIndexes[number])
-			for numberx in range(9):
-				for value in NumberIndexValues[numberx]:
-					if search_bst(bst, value):
-						PossibleIndexes[number].remove(value)	
+			for value in NumberIndexValues[number]:
+				Col = ColumnListLink[value]
+				PossibleCol[number].remove(Col)
+				for val in ColumnList[Col]:
+					if search_bst(bst, val):
+						PossibleIndexes[number].remove(val) 
+
+
 
 		for number in range(9): #Remove Corressponding section from Number Possible Values
 			bst = build_bst(PossibleIndexes[number])
@@ -116,25 +164,55 @@ def solve(sudoku):
 				for val in SectionList[SectionListLink[value]]:
 					if search_bst(bst, val):
 						PossibleIndexes[number].remove(val) 
-		
-		for number in range(9): #Processing To remove Possible Values and Append to Sudoku
-			
+
+		for number in range(9): #Remove placed numbers from Number Possible Values
+			bst = build_bst(PossibleIndexes[number])
+			for numberx in range(9):
+				for value in NumberIndexValues[numberx]:
+					if search_bst(bst, value):
+						PossibleIndexes[number].remove(value)	
+
+
+		for number in range(9): # clear value indexes already used
+			NumberIndexValues[number].clear()
+
+		for number in range(9): # check for single possible value in each column
+			for col in PossibleCol[number]:
+				bst = build_bst(ColumnList[col])
+				found = 0
+				for value in PossibleIndexes[number]:
+					if search_bst(bst, value):
+						found = found + 1
+						UniqueValue = value
+				if found == 1:
+					sudoku[number].append(AllPossibleValuesCoordinates[UniqueValue])
+					NumberIndexValues[number].append(UniqueValue)
+					PossibleCol[number].remove(col)
+					line = LineListLink[UniqueValue]
+
+		for number in range(9): # Remove impossible values in each Line for each number
 			bst = build_bst(PossibleIndexes[number])
 			for value in NumberIndexValues[number]:
-				for val in ColumnList[ColumnListLink[value]]:
-					if search_bst(bst, val):	
+				Line = LineListLink[value]
+				PossibleLine[number].remove(Line)
+				for val in LineList[Line]:
+					if search_bst(bst, val):
 						PossibleIndexes[number].remove(val) 
 
+		for number in range(9): #Remove Corressponding section from Number Possible Values
 			bst = build_bst(PossibleIndexes[number])
 			for value in NumberIndexValues[number]:
-				for val in LineList[LineListLink[value]]:
+				for val in SectionList[SectionListLink[value]]:
 					if search_bst(bst, val):
 						PossibleIndexes[number].remove(val) 
 
 
-	for x in PossibleIndexes:
-		print(x)
-
+		for number in range(9): #Remove placed numbers from Number Possible Values
+			bst = build_bst(PossibleIndexes[number])
+			for numberx in range(9):
+				for value in NumberIndexValues[numberx]:
+					if search_bst(bst, value):
+						PossibleIndexes[number].remove(value)	
 
 
 """
@@ -159,8 +237,9 @@ sudoku = [
 		[(2,5),(3,3),(6,2)],
 		[(2,6),(5,7),(6,3),(7,1)]
 		]
+Print_Output(ConvertToOutput(sudoku))
 solve(sudoku)
-
+print()
 Print_Output(ConvertToOutput(sudoku))
 
 
