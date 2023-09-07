@@ -1,3 +1,87 @@
+
+# learn to use git to come back to previous commits (off subject)
+# process each cell or (lbl,cbc)
+# each cell: use list matching nubmers in two list: (of 0-8 --> nubmers != c or l) --> use Possible l and c for 
+# It will search the smallest nubmer in the list in the section, if number > smallest in l or c the next smallest number
+#
+#
+# scan PossibleLine if 0>2 next line; if 0<2 append sudoku, RS + RD + RC + RL
+# scan PossibleCol if 0>2 next Col; if 0<2 append sudoku, RS + RD + RC + RL
+# scan PossibleSection if 0>2 next section; if 0<2 append sudoku, RS + RD + RC + RL
+#
+
+def main(sudoku):
+
+	SectionList = [
+	[0, 1, 2, 9, 10, 11, 18, 19, 20],
+    [3, 4, 5, 12, 13, 14, 21, 22, 23],
+    [6, 7, 8, 15, 16, 17, 24, 25, 26],
+    [27, 28, 29, 36, 37, 38, 45, 46, 47],
+    [30, 31, 32, 39, 40, 41, 48, 49, 50],
+    [33, 34, 35, 42, 43, 44, 51, 52, 53],
+    [54, 55, 56, 63, 64, 65, 72, 73, 74],
+    [57, 58, 59, 66, 67, 68, 75, 76, 77],
+    [60, 61, 62, 69, 70, 71, 78, 79, 80]]
+	SectionListLink = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8]
+	LineList = [[i for i in range(j, j+9)] for j in range(0, 81, 9)]
+	LineListLink = [(i // 9) % 9 for i in range(81)]
+	ColumnList = [[LineList[j][i] for j in range(9)] for i in range(9)]
+	ColumnListLink = [i % 9 for i in range(81)]
+
+	PossibleCol = [[0 for i in range(9)] for j in range(9)]
+	PossibleLine = [[0 for i in range(9)] for j in range(9)]
+	PossibleSec = [[0 for i in range(9)] for j in range(9)]
+	PossibleIndexes = [[0 for x in range(81)] for y in range(9)]
+	PossibleCoordinates = [(x, y) for x in range(9) for y in range(9)]
+	AllPossibleValuesCoordinates = [(y, x) for y in range(9) for x in range(9)]	
+	placed = True
+
+
+	def unsearch(INC) #Index_Number_of_Coordinate
+
+		PossibleLine[number][LineListLink[INC]] = 1
+		PossibleCol[number][ColumnListLink[INC]] = 1
+		PossibleSec[number][SectionListLink[INC]] = 1
+
+		for numberD in range(9): #Process each digit in Possible Coordinates
+			PossibleIndexes[numberD][INC] = 1	
+		for SINC in SectionList[SectionListLink[INC]]: # IN each Section for each Number
+			PossibleIndexes[number][SINC] = 1
+		for CINC in ColumnList[ColumnListLink[INC]]: # In each Column for each number
+			PossibleIndexes[number][CINC] = 1
+		for LINC in LineList[LineListLink[INC]]: # In Line for each number
+			PossibleIndexes[number][LINC] = 1 
+
+
+	def searchandplace(Possible,List):
+		for number in range(9):	
+			for n in range(9):
+				if Possible[number][n] == 0:
+					count = 0
+					for INC in List[n]:
+						if PossibleIndexes[number][INC] == 0:
+							count = count + 1
+							storedINC = INC
+					if count == 1:
+						placed = True
+						sudoku[number].append(PossibleCoordinates[storedINC])
+						unsearch(storedINC)
+	
+
+	for number in range(9): #Init
+		for NC in sudoku[number]:
+			INC = NC[1]+NC[0]+NC[0]*8
+			unsearch(INC)
+
+						
+	while placed == True: #Search And Place
+		placed = False
+		searchandplace(PossibleLine,LineList)
+		searchandplace(PossibleCol,ColumnList)
+		searchandplace(PossibleSec,SectionL:wist)
+
+
+
 def ConvertToOutput(var):
 	Output = [[0 for r in range(9)] for r in range(9)]
 	for number in range (9): #for number in sudoku
@@ -16,203 +100,6 @@ def Print_Output(Output):
 		print('')
 		if x in [2,5]:
 			print("-----------------")
-
-class Node: # Define a Node class for the binary search tree
-	def __init__(self, val=None):
-		self.val = val
-		self.left = None
-		self.right = None
-
-def build_bst(lst): # Define a function to build the binary search tree
-	root = Node(lst[0])
-	for i in range(1, len(lst)):
-		insert_node(root, lst[i])
-	return root
-
-def insert_node(root, val): # Define a function to insert a node into the binary search tree
-	if root is None:
-		root = Node(val)
-	elif val < root.val:
-		if root.left is None:
-			root.left = Node(val)
-		else:
-			insert_node(root.left, val)
-	else:
-		if root.right is None:
-			root.right = Node(val)
-		else:
-			insert_node(root.right, val)
-
-def search_bst(root, val): # Define a function to search for a value in the binary search tree
-	if root is None:
-		return False
-	elif root.val == val:
-		return True
-	elif val < root.val:
-		return search_bst(root.left, val)
-	else:
-		return search_bst(root.right, val)
-
-
-
-
-
-
-
-def solve(sudoku):
-	
-	AllPossibleValuesCoordinates = [(y, x) for y in range(9) for x in range(9)]	
-	SectionList = [
-	[0, 1, 2, 9, 10, 11, 18, 19, 20],
-    [3, 4, 5, 12, 13, 14, 21, 22, 23],
-    [6, 7, 8, 15, 16, 17, 24, 25, 26],
-    [27, 28, 29, 36, 37, 38, 45, 46, 47],
-    [30, 31, 32, 39, 40, 41, 48, 49, 50],
-    [33, 34, 35, 42, 43, 44, 51, 52, 53],
-    [54, 55, 56, 63, 64, 65, 72, 73, 74],
-    [57, 58, 59, 66, 67, 68, 75, 76, 77],
-    [60, 61, 62, 69, 70, 71, 78, 79, 80]
-	]
-
-	SectionListLink = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8]
-
-	LineList = [[i for i in range(j, j+9)] for j in range(0, 81, 9)]
-	LineListLink = [(i // 9) % 9 for i in range(81)]
-	PossibleLine = [[i for i in range(9)] for j in range(9)]
-	
-
-	ColumnList = [[LineList[j][i] for j in range(9)] for i in range(9)]
-	ColumnListLink = [i % 9 for i in range(81)]
-	PossibleCol = [[i for i in range(9)] for j in range(9)]
-
-	PossibleIndexes = [[x for x in range(81)] for y in range(9)]
-	PossibleCoordinates = [(x, y) for x in range(9) for y in range(9)]
-	NumberIndexValues = [[]for x in range (9)]
-
-
-	for numberx in range(9): #for each digit in the sudoku
-		for NC in sudoku[numberx]:
-			NumberIndexValues[numberx].append(NC[1]+NC[0]+NC[0]*8)
-	
-
-	for number in range(9): #Remove placed numbers from Number Possible Values
-		bst = build_bst(PossibleIndexes[number])
-		for numberx in range(9):
-			for value in NumberIndexValues[numberx]:
-				if search_bst(bst, value):
-					PossibleIndexes[number].remove(value)	
-
-	for number in range(9): #Remove Corressponding section from Number Possible Values
-		bst = build_bst(PossibleIndexes[number])
-		for value in NumberIndexValues[number]:
-			for val in SectionList[SectionListLink[value]]:
-				if search_bst(bst, val):
-					PossibleIndexes[number].remove(val) 
-
-	for number in range(9): # Remove impossible values in each Column for each number
-		bst = build_bst(PossibleIndexes[number])
-		for value in NumberIndexValues[number]:
-			Col = ColumnListLink[value]
-			PossibleCol[number].remove(Col)
-			for val in ColumnList[Col]:
-				if search_bst(bst, val):
-					PossibleIndexes[number].remove(val) 
-
-	for number in range(9): # Remove impossible values in each Line for each number
-		bst = build_bst(PossibleIndexes[number])
-		for value in NumberIndexValues[number]:
-			Line = LineListLink[value]
-			PossibleLine[number].remove(Line)
-			for val in LineList[Line]:
-				if search_bst(bst, val):
-					PossibleIndexes[number].remove(val) 
-
-	
-	for x in range(10):
-
-		for number in range(9): # clear value indexes already used
-			NumberIndexValues[number].clear()
-					
-		for number in range(9): # check for single possible value in each line
-			for line in PossibleLine[number]:
-				bst = build_bst(LineList[line])
-				found = 0
-				for value in PossibleIndexes[number]:
-					if search_bst(bst, value): 
-						found = found + 1
-						UniqueValue = value
-				if found == 1:
-					sudoku[number].append(AllPossibleValuesCoordinates[UniqueValue])
-					NumberIndexValues[number].append(UniqueValue)
-					PossibleLine[number].remove(line)
-
-
-		for number in range(9): # Remove impossible values in each Column for each number
-			bst = build_bst(PossibleIndexes[number])
-			for value in NumberIndexValues[number]:
-				Col = ColumnListLink[value]
-				PossibleCol[number].remove(Col)
-				for val in ColumnList[Col]:
-					if search_bst(bst, val):
-						PossibleIndexes[number].remove(val) 
-
-
-
-		for number in range(9): #Remove Corressponding section from Number Possible Values
-			bst = build_bst(PossibleIndexes[number])
-			for value in NumberIndexValues[number]:
-				for val in SectionList[SectionListLink[value]]:
-					if search_bst(bst, val):
-						PossibleIndexes[number].remove(val) 
-
-		for number in range(9): #Remove placed numbers from Number Possible Values
-			bst = build_bst(PossibleIndexes[number])
-			for numberx in range(9):
-				for value in NumberIndexValues[numberx]:
-					if search_bst(bst, value):
-						PossibleIndexes[number].remove(value)	
-
-
-		for number in range(9): # clear value indexes already used
-			NumberIndexValues[number].clear()
-
-		for number in range(9): # check for single possible value in each column
-			for col in PossibleCol[number]:
-				bst = build_bst(ColumnList[col])
-				found = 0
-				for value in PossibleIndexes[number]:
-					if search_bst(bst, value):
-						found = found + 1
-						UniqueValue = value
-				if found == 1:
-					sudoku[number].append(AllPossibleValuesCoordinates[UniqueValue])
-					NumberIndexValues[number].append(UniqueValue)
-					PossibleCol[number].remove(col)
-					line = LineListLink[UniqueValue]
-
-		for number in range(9): # Remove impossible values in each Line for each number
-			bst = build_bst(PossibleIndexes[number])
-			for value in NumberIndexValues[number]:
-				Line = LineListLink[value]
-				PossibleLine[number].remove(Line)
-				for val in LineList[Line]:
-					if search_bst(bst, val):
-						PossibleIndexes[number].remove(val) 
-
-		for number in range(9): #Remove Corressponding section from Number Possible Values
-			bst = build_bst(PossibleIndexes[number])
-			for value in NumberIndexValues[number]:
-				for val in SectionList[SectionListLink[value]]:
-					if search_bst(bst, val):
-						PossibleIndexes[number].remove(val) 
-
-
-		for number in range(9): #Remove placed numbers from Number Possible Values
-			bst = build_bst(PossibleIndexes[number])
-			for numberx in range(9):
-				for value in NumberIndexValues[numberx]:
-					if search_bst(bst, value):
-						PossibleIndexes[number].remove(value)	
 
 
 """
@@ -237,10 +124,14 @@ sudoku = [
 		[(2,5),(3,3),(6,2)],
 		[(2,6),(5,7),(6,3),(7,1)]
 		]
-Print_Output(ConvertToOutput(sudoku))
-solve(sudoku)
-print()
-Print_Output(ConvertToOutput(sudoku))
+
+
+
+if __name__ == "__main__":
+	Print_Output(ConvertToOutput(sudoku))
+	main(sudoku)
+	print()
+	Print_Output(ConvertToOutput(sudoku))
 
 
 
